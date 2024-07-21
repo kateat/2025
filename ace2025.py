@@ -14,7 +14,7 @@
 # limitations under the License.
 
 # Lint as: python3
-"""Factavia: Question Answering Dataset."""
+"""ACE:Question Answering Dataset."""
 
 
 import json
@@ -29,7 +29,7 @@ logger = datasets.logging.get_logger(__name__)
 _CITATION = """\
 @article{2016arXiv160605250R,
        author = {Venetia Grant},
-        title = "{Factavia: 100 Questions for Machine Comprehension of Text}",
+        title = "{ACE: 100 Questions for Machine Comprehension of Text}",
          year = 2016,
 }
 """

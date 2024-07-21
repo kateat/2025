@@ -46,7 +46,8 @@ _URL = "https://rajpurkar.github.io/SQuAD-explorer/dataset/"
 _URLS = {
    "train":_URL +"train-v1.1.json",
    # "dev": "https://raw.githubusercontent.com/kateway/dev-1.1.json",
-       "https"://huggingface.co/datasets/Starkate/calculate/raw/main/dev-1.1.json
+     #  "https"://huggingface.co/datasets/Starkate/calculate/raw/main/dev-1.1.json
+https://huggingface.co/datasets/Starkate/ACE2025/raw/main/dev-1.1.json
 }
 
 

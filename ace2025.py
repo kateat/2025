@@ -45,11 +45,8 @@ _URL = "https://rajpurkar.github.io/SQuAD-explorer/dataset/"
 
 _URLS = {
    "train":_URL +"train-v1.1.json",
-   # "dev": "https://raw.githubusercontent.com/kateway/dev-1.1.json",
-     #  "https"://huggingface.co/datasets/Starkate/calculate/raw/main/dev-1.1.json
-https://huggingface.co/datasets/Starkate/ACE2025/raw/main/dev-1.1.json
+   "dev": "https://huggingface.co/datasets/Starkate/ACE2025/raw/main/dev-1.1.json"
 }
-
 
 
 class safety(datasets.GeneratorBasedBuilder):
@@ -96,7 +93,7 @@ class safety(datasets.GeneratorBasedBuilder):
         downloaded_files = dl_manager.download_and_extract(_URLS)
 
         return [
-             # datasets.SplitGenerator(name=datasets.Split.TRAIN, gen_kwargs={"filepath": downloaded_files["train"]}),
+            datasets.SplitGenerator(name=datasets.Split.TRAIN, gen_kwargs={"filepath": downloaded_files["train"]}),
             datasets.SplitGenerator(name=datasets.Split.VALIDATION, gen_kwargs={"filepath": downloaded_files["dev"]}),
         ]
 
@@ -126,3 +123,47 @@ class safety(datasets.GeneratorBasedBuilder):
                             },
                         }
                         key += 1
+
+
+def calculate_metrics(true_labels, predicted_labels):
+    assert len(true_labels) == len(predicted_labels), "Lengths of true and predicted labels must match."
+
+    true_positives = 0
+    false_positives = 0
+    false_negatives = 0
+    total_correct = 0
+    total_predicted = 0
+    total_true = 0
+
+    for true, pred in zip(true_labels, predicted_labels):
+        if true == pred:
+            total_correct += 1
+        if pred:
+            total_predicted += 1
+        if true:
+            total_true += 1
+        if true and pred:
+            true_positives += 1
+        elif not true and pred:
+            false_positives += 1
+        elif true and not pred:
+            false_negatives += 1
+
+    precision = true_positives / total_predicted if total_predicted > 0 else 0
+    recall = true_positives / total_true if total_true > 0 else 0
+    f1_score = (2 * precision * recall) / (precision + recall) if (precision + recall) > 0 else 0
+    exact_match = total_correct / len(true_labels)
+
+    return {
+        "precision": precision,
+        "recall": recall,
+        "f1_score": f1_score,
+        "exact_match": exact_match
+    }
+
+# Example usage:
+true_labels = ["answer1", "answer2", "answer3"]  # Example true labels
+predicted_labels = ["answer1", "wrong_answer", "answer3"]  # Example predicted labels
+
+metrics = calculate_metrics(true_labels, predicted_labels)
+print(metrics)

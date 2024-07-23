@@ -125,7 +125,6 @@ class safety(datasets.GeneratorBasedBuilder):
                         }
                         key += 1
 
-
 def calculate_metrics(true_labels, predicted_labels):
     assert len(true_labels) == len(predicted_labels), "Lengths of true and predicted labels must match."
 
@@ -137,21 +136,23 @@ def calculate_metrics(true_labels, predicted_labels):
     total_true = 0
 
     for true, pred in zip(true_labels, predicted_labels):
+        true_set = set(true.split())
+        pred_set = set(pred.split())
+        
+        true_positives += len(true_set & pred_set)
+        false_positives += len(pred_set - true_set)
+        false_negatives += len(true_set - pred_set)
+
         if true == pred:
             total_correct += 1
+
         if pred:
             total_predicted += 1
         if true:
             total_true += 1
-        if true and pred:
-            true_positives += 1
-        elif not true and pred:
-            false_positives += 1
-        elif true and not pred:
-            false_negatives += 1
 
-    precision = true_positives / total_predicted if total_predicted > 0 else 0
-    recall = true_positives / total_true if total_true > 0 else 0
+    precision = true_positives / (true_positives + false_positives) if (true_positives + false_positives) > 0 else 0
+    recall = true_positives / (true_positives + false_negatives) if (true_positives + false_negatives) > 0 else 0
     f1_score = (2 * precision * recall) / (precision + recall) if (precision + recall) > 0 else 0
     exact_match = total_correct / len(true_labels)
 
@@ -163,8 +164,15 @@ def calculate_metrics(true_labels, predicted_labels):
     }
 
 # Example usage:
-true_labels = ["answer1", "answer2", "answer3"]  # Example true labels
-predicted_labels = ["answer1", "wrong_answer", "answer3"]  # Example predicted labels
+true_labels = ["The capital of France is Paris"]  # Example true labels
+predicted_labels = ["The capital of France is London"]  # Example predicted labels
 
 metrics = calculate_metrics(true_labels, predicted_labels)
-print(metrics)
+print("Metrics:")
+print(f"Precision: {metrics['precision']}")
+print(f"Recall: {metrics['recall']}")
+print(f"F1 Score: {metrics['f1_score']}")
+print(f"Exact Match: {metrics['exact_match']}")
+
+
+
